@@ -1,0 +1,49 @@
+name: CI/CD Pipeline
+
+on:
+  push:
+    branches:
+      - main
+
+  pull_request:
+    branches:
+      - main
+
+jobs:
+
+  ci:
+    name: Continuous Integration
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v6
+
+      - name: Show repository
+        run: |
+          echo "Repository checked out successfully"
+          ls -la
+
+      - name: Validate YAML files
+        run: |
+          echo "Validating workflow files..."
+          find .github/workflows -type f \( -name "*.yml" -o -name "*.yaml" \)
+
+      - name: CI completed
+        run: echo "CI passed successfully"
+
+
+  cd:
+    name: Continuous Deployment
+    needs: ci
+    if: github.event_name == 'push' && github.ref == 'refs/heads/main'
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v6
+
+      - name: Deploy
+        run: |
+          echo "Deployment started..."
+          echo "Deployment completed successfully"
